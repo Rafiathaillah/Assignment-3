@@ -1,5 +1,6 @@
 package com.example.assignment_3
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -133,13 +134,15 @@ fun ReactTestApp(){
     fun resetGame(){
         currentTrial = 1
         reactTimes = emptyList()
-        gameState = "WAITING"
+        gameState = "START"
     }
     when (gameState){
         "START" -> {
             ReactTestView(
                 reactTimes = reactTimes,
-                onStartClick = { resetGame() }
+                onStartClick = {
+                   gameState = "WAITING"
+                }
             )
         }
         "WAITING" -> {
@@ -156,7 +159,7 @@ fun ReactTestApp(){
                 onFinishClick = {
                     val timeTaken = System.currentTimeMillis() - startTime
                     lastReactTime = timeTaken
-                    reactTimes = reactTimes + lastReactTime + timeTaken
+                    reactTimes = reactTimes + timeTaken
 
                     if (currentTrial < 3){
                         gameState = "TRIAL_RESULT"
@@ -169,7 +172,6 @@ fun ReactTestApp(){
                             else -> "SLOW"
                         }
                     }
-                    gameState = "START"
                 }
             )
         }
@@ -190,10 +192,10 @@ fun ReactTestApp(){
                 onTooEarlyClick = {gameState = "START"}
             )
         }
-        "SUPER_FAST" -> ReactTestSuperFast()
-        "FAST" -> ReactTestFast()
-        "AVERAGE" -> ReactTestAverage()
-        "SLOW" -> ReactTestSlow()
+        "SUPER_FAST" -> ReactTestSuperFast("SUPER FAST", reactTimes, onRestart = {resetGame()})
+        "FAST" -> ReactTestFast("FAST", reactTimes, onRestart = {resetGame()})
+        "AVERAGE" -> ReactTestAverage("AVERAGE", reactTimes, onRestart = {resetGame()})
+        "SLOW" -> ReactTestSlow("SLOW", reactTimes, onRestart = {resetGame()})
     }
 }
 
@@ -430,27 +432,289 @@ fun ReactTestEarly(reactTimes: List<Long>, onTooEarlyClick: () -> Unit){
 
 @Composable
 fun ReactTestTrialResult(trialNumber: Int, timeMs: Long, reactTimes: List<Long>, onNextClick: () -> Unit){
+    Surface(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xff4cb050))
+                .clickable{
+                    onNextClick()
+                },
+            contentAlignment = Alignment.Center
+        ){
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(
+                    "Trial $trialNumber Complete!",
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
 
+                Spacer(modifier = Modifier.padding(vertical = 15.dp))
+
+                Icon(
+                    painter = painterResource(R.drawable.checked),
+                    contentDescription = "Ligtning",
+                    modifier = Modifier.size(280.dp),
+                    tint = Color.White
+                )
+
+                Spacer(modifier = Modifier.padding(vertical = 15.dp))
+
+                Text(
+                    "Time: ${timeMs}ms",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+
+                Spacer(modifier = Modifier.padding(vertical = 15.dp))
+
+                Text(
+                    "Continue to Trial ${trialNumber + 1}",
+                    fontSize = 14.sp,
+                    color = Color.White
+                )
+
+                TrialBox(reactTimes = reactTimes)
+            }
+        }
+    }
 }
 
 @Composable
-fun ReactTestSuperFast(){
+fun ReactTestSuperFast(categoryName: String, reactTimes: List<Long>, onRestart: () -> Unit){
+    Surface(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xff4cb050))
+                .clickable{
+                    onRestart()
+                },
+            contentAlignment = Alignment.Center
+        ){
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(
+                    "DU DU DU DUH!",
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
 
+                Spacer(modifier = Modifier.padding(vertical = 15.dp))
+
+                Image(
+                    painter = painterResource(R.drawable.runmaxrun_max_verstappen),
+                    contentDescription = "Ligtning",
+                    modifier = Modifier.size(280.dp),
+                )
+
+                Spacer(modifier = Modifier.padding(vertical = 15.dp))
+
+                Text(
+                    "Average: ${reactTimes.average().toInt()}ms",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+
+                Spacer(modifier = Modifier.padding(vertical = 15.dp))
+
+                Text(
+                    "Click anywhere to restart the test",
+                    fontSize = 14.sp,
+                    color = Color.White
+                )
+
+                TrialBox(reactTimes = reactTimes, showAvg = true)
+            }
+        }
+    }
 }
 
 @Composable
-fun ReactTestFast(){
+fun ReactTestFast(categoryName: String, reactTimes: List<Long>, onRestart: () -> Unit){
+    Surface(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xff4cb050))
+                .clickable{
+                    onRestart()
+                },
+            contentAlignment = Alignment.Center
+        ){
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(
+                    "IM FAST AF BOIII!",
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
 
+                Spacer(modifier = Modifier.padding(vertical = 15.dp))
+
+                Image(
+                    painter = painterResource(R.drawable.im_fast_af_boi),
+                    contentDescription = "Ligtning",
+                    modifier = Modifier.size(280.dp),
+                )
+
+                Spacer(modifier = Modifier.padding(vertical = 15.dp))
+
+                Text(
+                    "Average: ${reactTimes.average().toInt()}ms",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+
+                Spacer(modifier = Modifier.padding(vertical = 15.dp))
+
+                Text(
+                    "Click anywhere to restart the test",
+                    fontSize = 14.sp,
+                    color = Color.White
+                )
+
+                TrialBox(reactTimes = reactTimes, showAvg = true)
+            }
+        }
+    }
 }
 
 @Composable
-fun ReactTestAverage(){
+fun ReactTestAverage(categoryName: String, reactTimes: List<Long>, onRestart: () -> Unit){
+    Surface(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xffff9700))
+                .clickable{
+                    onRestart()
+                },
+            contentAlignment = Alignment.Center
+        ){
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(
+                    "I MEAN IT'S ALRIGHT!",
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
 
+                Spacer(modifier = Modifier.padding(vertical = 15.dp))
+
+                Image(
+                    painter = painterResource(R.drawable.i_mean_its_alright),
+                    contentDescription = "average_meme",
+                    modifier = Modifier.size(280.dp),
+                )
+
+                Spacer(modifier = Modifier.padding(vertical = 15.dp))
+
+                Text(
+                    "Average: ${reactTimes.average().toInt()}ms",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+
+                Spacer(modifier = Modifier.padding(vertical = 15.dp))
+
+                Text(
+                    "Click anywhere to restart the test",
+                    fontSize = 14.sp,
+                    color = Color.White
+                )
+
+                TrialBox(reactTimes = reactTimes, showAvg = true)
+            }
+        }
+    }
 }
 
 @Composable
-fun ReactTestSlow(){
-    
+fun ReactTestSlow(categoryName: String, reactTimes: List<Long>, onRestart: () -> Unit){
+    Surface(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xff4cb050))
+                .clickable{
+                    onRestart()
+                },
+            contentAlignment = Alignment.Center
+        ){
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Text(
+                    "YOU LIKE A SNAIL BRO!",
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+
+                Spacer(modifier = Modifier.padding(vertical = 15.dp))
+
+                Image(
+                    painter = painterResource(R.drawable.omw_slow),
+                    contentDescription = "Ligtning",
+                    modifier = Modifier.size(280.dp),
+                )
+
+                Spacer(modifier = Modifier.padding(vertical = 15.dp))
+
+                Text(
+                    "Average: ${reactTimes.average().toInt()}ms",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+
+                Spacer(modifier = Modifier.padding(vertical = 15.dp))
+
+                Text(
+                    "Click anywhere to restart the test",
+                    fontSize = 14.sp,
+                    color = Color.White
+                )
+
+                TrialBox(reactTimes = reactTimes, showAvg = true)
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
