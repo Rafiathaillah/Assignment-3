@@ -1,4 +1,4 @@
-package com.example.assignment_3
+package com.example.assignment_3.cat_clicker
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -41,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.assignment_3.R
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 

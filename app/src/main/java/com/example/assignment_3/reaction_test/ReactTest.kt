@@ -1,4 +1,4 @@
-package com.example.assignment_3
+package com.example.assignment_3.reaction_test
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.assignment_3.R
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
@@ -40,7 +41,6 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 fun TrialBox(reactTimes: List<Long>, showAvg: Boolean = false){
     Surface(
-        shape = RoundedCornerShape(16.dp),
         color = Color(0xffEFF5ED),
         modifier = Modifier.padding(16.dp)
     ) {
