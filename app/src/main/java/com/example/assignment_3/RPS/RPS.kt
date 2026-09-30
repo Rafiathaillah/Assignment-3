@@ -15,6 +15,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -28,17 +29,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun RpsApp(){
-    var currState by rememberSaveable { mutableStateOf(GameState.FINISHED)}
+    var currState by rememberSaveable { mutableStateOf(GameState.INITIAL)}
     var currScore by rememberSaveable { mutableIntStateOf(0) }
     var currEnemyScore by rememberSaveable { mutableIntStateOf(0) }
     var userPick by rememberSaveable { mutableStateOf<RPSPick?>(null) }
     var enemyPick by rememberSaveable { mutableStateOf<RPSPick?>(null) }
     var lastResult by rememberSaveable {mutableStateOf<Result?>(null)}
+    var bestScore by rememberSaveable { mutableIntStateOf(0) }
 
-    val targetScore = 2
+    val targetScore = 3
 
     fun pickHandler(pick: RPSPick){
         val enemy = RPSPick.entries.random()
@@ -91,7 +95,16 @@ fun RpsApp(){
                 userPick = userPick,
                 enemyPick = enemyPick,
                 result = lastResult,
-                targetScore = targetScore
+                onTimeOut = {
+                    if (currScore >= targetScore || currEnemyScore >= targetScore){
+                        if (currScore > currEnemyScore){
+                            bestScore = currScore
+                        }
+                        currState = GameState.FINISHED
+                    } else {
+                        currState = GameState.PICK
+                    }
+                }
             )
         }
 
@@ -99,6 +112,7 @@ fun RpsApp(){
             Finished(
                 currentScore = currScore,
                 currentEnemyScore = currEnemyScore,
+                bestScore = bestScore,
                 onRestart = {
                     resetGame()
                 },
@@ -138,7 +152,7 @@ fun View(onStart: () -> Unit){
                 Spacer(Modifier.weight(1f))
 
                 Text(
-                    "Best of 3"
+                    "Best of 5"
                 )
             }
 
@@ -204,7 +218,7 @@ fun Pick(
                 Spacer(Modifier.weight(1f))
 
                 Text(
-                    "Best of 3"
+                    "Best of 5"
                 )
             }
 
@@ -241,7 +255,7 @@ fun Pick(
                             contentColor = Color.Black
                         ),
                         modifier = Modifier
-                            .padding(horizontal = 8.dp),
+                            .padding(horizontal = 4.dp),
                         shape = RoundedCornerShape(30.dp),
                         elevation = ButtonDefaults.buttonElevation(
                             defaultElevation = 0.dp,
@@ -251,7 +265,7 @@ fun Pick(
                     ){
                         Text(
                             option.displayText,
-                            fontSize = 16.sp
+                            fontSize = 14.sp
                         )
                     }
                 }
@@ -267,9 +281,12 @@ fun Reveal(
     userPick: RPSPick?,
     enemyPick: RPSPick?,
     result: Result?,
-    targetScore: Int = 2
+    onTimeOut: () -> Unit
 ){
-    val isGameOver = currentScore >= targetScore || currentEnemyScore >= targetScore
+    LaunchedEffect(userPick, enemyPick) {
+        delay(2000L.milliseconds)
+        onTimeOut()
+    }
 
     Surface(
         color = Color(0xfffafafa),
@@ -295,22 +312,29 @@ fun Reveal(
                 Spacer(Modifier.weight(1f))
 
                 Text(
-                    "Best of 3"
+                    "Best of 5"
                 )
             }
 
             Spacer(Modifier.height(70.dp))
 
             Text(
-                "❔ VS ❔",
+                "${userPick?.emoji} VS ${enemyPick?.emoji}",
                 fontSize = 36.sp,
                 textAlign = TextAlign.Center
             )
 
             Spacer(Modifier.height(50.dp))
 
+            val resultText = when (result){
+                Result.WIN -> "You Win!"
+                Result.LOSE -> "You Lose!"
+                Result.DRAW -> "Draw!"
+                null -> ""
+            }
+
             Text(
-                "You Win!", //text bakal ganti sesuai dengan Result
+                resultText,
                 fontSize = 20.sp,
                 textAlign = TextAlign.Center
             )
@@ -322,6 +346,7 @@ fun Reveal(
 fun Finished(
     currentScore: Int,
     currentEnemyScore: Int,
+    bestScore: Int,
     onRestart: () -> Unit,
     onExit: () -> Unit
 ){
@@ -349,7 +374,7 @@ fun Finished(
                 Spacer(Modifier.weight(1f))
 
                 Text(
-                    "Best of 3"
+                    "Best of 5"
                 )
             }
 
@@ -364,7 +389,7 @@ fun Finished(
             Spacer(Modifier.height(20.dp))
 
             Text(
-                "Best Score:",
+                "Best Score: $bestScore",
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center
             )
