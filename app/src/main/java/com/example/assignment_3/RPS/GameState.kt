@@ -4,5 +4,6 @@ enum class GameState {
     INITIAL,
     PICK,
     REVEAL,
+    FINISHED
 //    FINISHED
 }
